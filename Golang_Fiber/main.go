@@ -1,26 +1,31 @@
 package main
 
 import (
-	"time"
+	"belajar-golang-fiber/database"
+	"belajar-golang-fiber/database/migrations"
+	"belajar-golang-fiber/routes"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
-	app := fiber.New(fiber.Config{
-		IdleTimeout: time.Second * 10,
-		WriteTimeout: time.Second * 10,
-		ReadTimeout: time.Second * 10,
-	})
-
-	app.Get("/", func(ctx *fiber.Ctx) error {
-		return ctx.SendString("Hello, World!")
-	})
-	
-	err := app.Listen("localhost:3000")
+ app := fiber.New()
 
 
-	if err != nil {
-		panic(err)
-	}
+ // Inisialisasi Database
+ database.DatabaseInit()
+
+ // Inisialisasi Migration
+ migrations.Migration()
+
+ app.Get("/", func(c *fiber.Ctx) error {
+  return c.Status(200).JSON(fiber.Map{
+   "message": "Hello",
+  })
+ })
+
+ // Inisialisasi Rute
+ routes.RouteInit(app)
+
+ app.Listen(":8080")
 }
